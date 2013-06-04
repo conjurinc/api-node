@@ -1,0 +1,14 @@
+{
+  "name": "conjur-api",
+  "version": "2.0.0",
+  "dependencies": {
+    "underscore": "latest",
+    "async": "latest",
+    "winston": "latest",
+    "restler": "latest"
+  },
+  "main": "lib/index.js",
+  "devDependencies": {
+    "gently": "latest"
+  }
+}
