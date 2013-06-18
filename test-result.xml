@@ -1,0 +1,28 @@
+<testsuite name="Mocha Tests" tests="26" failures="0" errors="0" skip="0" timestamp="Tue, 18 Jun 2013 19:05:43 GMT" time="0.008">
+<testcase classname="conjur_authn #tokenHeader" name="creates an Authorization Token" time="0"/>
+<testcase classname="conjur_authn #authenticate with status code 403" name="is denied" time="0.001"/>
+<testcase classname="conjur_authn #authenticate with status code 200" name="authenticates" time="0.001"/>
+<testcase classname="conjur_authz #parseResourceId" name="interprents an Array" time="0"/>
+<testcase classname="conjur_authz #parseResourceId" name="parses a string" time="0"/>
+<testcase classname="conjur_authz #exists with status code 404" name="returns false" time="0.001"/>
+<testcase classname="conjur_authz #exists with status code 200" name="returns true" time="0"/>
+<testcase classname="conjur_authz #allowedTo with status code 404" name="fails" time="0"/>
+<testcase classname="conjur_authz #allowedTo with status code 200" name="returns the result" time="0"/>
+<testcase classname="config env = development stack = ci account = test" name="authn matches expectation" time="0"/>
+<testcase classname="config env = development stack = ci account = test" name="authz matches expectation" time="0"/>
+<testcase classname="config env = production stack = ci account = test" name="authn matches expectation" time="0"/>
+<testcase classname="config env = production stack = ci account = test" name="authz matches expectation" time="0"/>
+<testcase classname="conjur_dir #uidnumbers with status code 404" name="returns false" time="0"/>
+<testcase classname="conjur_dir #uidnumbers with status code 200" name="returns the ids" time="0"/>
+<testcase classname="Host #currentRole as user" name="matches" time="0"/>
+<testcase classname="Host #currentRole as host" name="matches" time="0"/>
+<testcase classname="Host #visibleTo when the logged in user is the host" name="shortcuts" time="0"/>
+<testcase classname="Host #visibleTo when the logged in user is not the host and the role list contains the current role" name="is true" time="0"/>
+<testcase classname="Host #visibleTo when the logged in user is not the host and the role list does not contain the current role" name="is false" time="0"/>
+<testcase classname="Host #verifyVisibleTo when the host is visible" name="does not error" time="0"/>
+<testcase classname="Host #verifyVisibleTo when the host is not visible" name="does error" time="0"/>
+<testcase classname="Host #rolesWithAccessTo" name="builds map of user to permission" time="0"/>
+<testcase classname="User #authenticate with expected username and password" name="authenticates" time="0"/>
+<testcase classname="User #authenticate with invalid password" name="authenticates" time="0"/>
+<testcase classname="User #uidnumbers" name="succeeds" time="0"/>
+</testsuite>
