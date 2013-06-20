@@ -63,7 +63,7 @@ describe 'conjur_authz', ()->
       it 'fails', (done)->
         stubGet [], 404
         connection.allowedTo permission, (err, result)->
-          assert err == "GET http://example.com/the-account/roles/allowed_to/fry/pig/bacon failed : 404"
+          assert.deepEqual err, { code: 404, message: "HTTP status code 404 fetching 'http://example.com/the-account/roles/allowed_to/fry/pig/bacon'" }
           assert !result
           done()
     
