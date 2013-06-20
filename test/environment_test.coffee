@@ -1,4 +1,3 @@
-require('source-map-support').install()
 assert = require('assert')
 gently = new (require('gently'))
 g = require('../lib/global')
