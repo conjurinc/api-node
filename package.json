@@ -1,11 +1,11 @@
 {
   "name": "conjur-api",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "dependencies": {
     "underscore": "latest",
     "async": "latest",
     "winston": "latest",
-    "restler": "latest"
+    "restler": "git://github.com/berryboy/restler#master"
   },
   "main": "lib/index.js",
   "devDependencies": {

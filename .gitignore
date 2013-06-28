@@ -1,3 +1,5 @@
+integration-result.xml
+integration/testdata
 test-result.xml
 test.log
 node_modules
