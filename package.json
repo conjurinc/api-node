@@ -1,6 +1,6 @@
 {
   "name": "conjur-api",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "dependencies": {
     "underscore": "latest",
     "async": "latest",
