@@ -20,7 +20,7 @@ describe 'conjur_authz', ->
     describe '#memberships', ->
       it 'includes the known group', (done)->
         roleId = [ 'ci', 'user', admin.login ]
-        conjur_authz.connect('https://authz-ci-conjur.herokuapp.com', admin_token).role(roleId).memberships (err, result)->
+        conjur_authz.connect('https://authz-ci-v4-conjur.herokuapp.com', admin_token).role(roleId).memberships (err, result)->
           assert !err, g.inspect(err)
           assert.deepEqual result.sort(), [ "ci:group:#{ns}/admin", "ci:user:#{ns}-admin" ]
           done()

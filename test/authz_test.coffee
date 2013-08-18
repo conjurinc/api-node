@@ -27,7 +27,7 @@ describe 'conjur_authz', ()->
       
       stubGet = (statusCode)->
         gently.expect g.rest, 'get', (url, body)->
-          assert.equal url, g.format('http://example.com/%s/roles/%s/%s?check&privilege=%s&resource_account=%s&resource_kind=%s&resource_id=%s', account, roleKind, roleIdentifier, privilege, account, kind, identifier)
+          assert.equal url, g.format('http://example.com/%s/roles/%s/%s?check&privilege=%s&resource_id=%s', account, roleKind, roleIdentifier, privilege, account+"%3A"+kind+"%3A"+identifier)
           {
             'on': (arg, callback)->
               if arg == 'complete'
@@ -75,7 +75,7 @@ describe 'conjur_authz', ()->
       describe 'with status code 200', ()->
         it 'returns the result', (done)->
           expectedResult = [ 'the-account:user:the-user' ]
-          stubGet [ { id: { account: account, id: 'user:the-user' } } ], 200
+          stubGet [ account+':user:the-user' ], 200
           resource.allowedTo permission, (err, result)->
             assert !err
             assert.deepEqual expectedResult, result

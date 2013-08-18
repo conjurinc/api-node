@@ -3,7 +3,7 @@ set -e
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-rvm use 1.9.3@conjur-cli-ci
+rvm use --create 2.0.0@conjur-cli-ci
 
 # Bootstrap
 WORKDIR=$1
