@@ -19,7 +19,7 @@ describe 'conjur_authn', ->
       it 'is denied', (done)->
         conjur_authn.connect('https://authn-ci-conjur.herokuapp.com').authenticate admin.login, 'foobar', (result, token)->
           winston.debug(g.inspect(result))
-          winston.debug(token)
+          winston.debug(g.inspect(token))
           assert.equal result, "POST https://authn-ci-conjur.herokuapp.com/users/#{admin.login}/authenticate failed : 401"
           assert !token
           done()
