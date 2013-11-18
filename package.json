@@ -14,6 +14,7 @@
   ],
   "main": "lib/index.js",
   "devDependencies": {
-    "gently": "latest"
+    "gently": "latest",
+    "doctor": "latest"
   }
 }
