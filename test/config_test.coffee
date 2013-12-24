@@ -15,6 +15,39 @@ describe 'config', ()->
    
   describe 'env = production', ->
     env = 'production'
+    stack = 'ci'
+    
+    describe 'environment variables', ->
+      account = 'test'
+      before ->
+        process.env.CONJUR_AUTHN_URL = 'https://localhost:443/api/authn'
+        process.env.CONJUR_AUTHZ_URL = 'https://localhost:443/api/authz'
+        process.env.CONJUR_CORE_URL = 'https://localhost:443/api'
+      after ->
+        delete process.env['CONJUR_AUTHN_URL']
+        delete process.env['CONJUR_AUTHZ_URL']
+        delete process.env['CONJUR_CORE_URL']
+
+      it 'authn matches expectation', ->
+        assert.equal config.authnUrl(env, stack, account), 'https://localhost:443/api/authn/'
+      it 'authz matches expectation', ->
+        assert.equal config.authzUrl(env, stack, account), 'https://localhost:443/api/authz/'
+      it 'directory matches expectation', ->
+        assert.equal config.directoryUrl(env, stack, account), 'https://localhost:443/api/'
+    
+    describe 'applianceUrl', ->
+      account = 'test'
+      before ->
+        config.applianceUrl = 'https://localhost:443/api'
+      after ->
+        config.applianceUrl = null
+      it 'authn matches expectation', ->
+        assert.equal config.authnUrl(env, stack, account), 'https://localhost:443/api/authn/'
+      it 'authz matches expectation', ->
+        assert.equal config.authzUrl(env, stack, account), 'https://localhost:443/api/authz/'
+      it 'directory matches expectation', ->
+        assert.equal config.directoryUrl(env, stack, account), 'https://localhost:443/api/'
+        
     describe 'stack = ci', ->
       stack = 'ci'
       describe 'account = test', ->
