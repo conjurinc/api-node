@@ -15,6 +15,7 @@
   "main": "lib/index.js",
   "devDependencies": {
     "gently": "latest",
-    "doctor": "latest"
+    "doctor": "latest",
+    "browserify": "~3.14.1"
   }
 }
