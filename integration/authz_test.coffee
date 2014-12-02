@@ -38,7 +38,7 @@ describe 'conjur_authz', ->
   describe '#pubkeys', ->
     describe '#show', ->
       it 'show pubkeys', (done)->
-        conjur_pubkeys.connect('https://authz-ci-conjur.herokuapp.com/api/pubkeys', token).show(admin.login, (err, result)->
+        conjur_pubkeys.connect('https://authz-ci-conjur.herokuapp.com/api/pubkeys', token).show admin.login, (err, result)->
           assert !err, g.inspect(err)
           assert.notEqual(result.length, 0)
           done()
