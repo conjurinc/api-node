@@ -26,3 +26,4 @@ ns=`conjur id:create | tee ns`
 CONJURAPI_LOG=stderr conjur user:create $ns-admin --no-password > admin.json
 CONJURAPI_LOG=stderr conjur group:create $ns/admin >/dev/null
 CONJURAPI_LOG=stderr conjur group:members:add $ns/admin user:$ns-admin
+CONJURAPI_LOG=stderr conjur pubkeys:add $ns-admin @admin.json >/dev/null
