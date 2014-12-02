@@ -30,7 +30,7 @@ describe 'conjur_authz', ->
     describe '#members', ->
       it 'list members of the group', (done)->
         groupId = ['ci', 'group', "#{ns}/#{admin.userid}"]
-        conjur_authz.connect('https://authz-ci-conjur.herokuapp.com', admin_token).group(groupId).members (err, result)->
+        conjur_authz.connect('https://authz-ci-conjur.herokuapp.com', admin_token).group(groupId).members.list (err, result)->
           assert !err, g.inspect(err)
           assert.notEqual(result.length, 0)
           done()
@@ -38,7 +38,7 @@ describe 'conjur_authz', ->
   describe '#pubkeys', ->
     describe '#show', ->
       it 'show pubkeys', (done)->
-        conjur_pubkeys.connect('https://authz-ci-conjur.herokuapp.com/api/pubkeys', token).show admin.login, (err, result)->
+        conjur_pubkeys.connect('https://authz-ci-conjur.herokuapp.com/api/pubkeys', admin_token).show admin.login, (err, result)->
           assert !err, g.inspect(err)
           assert.notEqual(result.length, 0)
           done()
