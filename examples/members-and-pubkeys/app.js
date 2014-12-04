@@ -5,42 +5,34 @@ var assert = require('assert'),
     yaml = require('js-yaml'),
     fs = require('fs');
 
-function main(baseUrl, account, login, password) {
-    var infoUrl = baseUrl + 'api/info',
-        authnUrl = baseUrl + 'api/authn',
-        authzUrl = baseUrl + 'api/authz',
-        pubkeysUrl = baseUrl + 'api/pubkeys';
-
+function main(endpoints, account, login, password, groupId) {
     conjur.authn
-        .connect(authnUrl)
+        .connect(endpoints.authn(account))
         .authenticate(login, password, function(result, token) {
             assert(token);
 
-            var groupId = [account, 'group', 'build-0.1.0/ha-managers'];
-
-            conjur.authz
-                .connect(authzUrl, token)
-                .group(groupId)
-                .members
-                .list(function(err, result) {
+            conjur.group
+                .connect(endpoints, token)
+                .group(account, groupId)
+                .members(function(err, result) {
                     assert(!err, conjur.global.inspect(err));
-                    console.log('Groups:', result);
+                    console.log('Members:', conjur.global.u.map(result, function(r){ return r.member }));
                     console.log();
 
                     result.forEach(function(g) {
                         var member = g.member.split(':')[2];
 
                         if (g.member.split(':')[1] !== 'user') {
-                            console.log(g.member, 'not a user');
+                            console.log(g.member, 'is not a user');
                             return;
                         }
 
                         conjur.pubkeys
-                            .connect(pubkeysUrl, token)
-                            .show(g.member, function(err, result) {
+                            .connect(endpoints, token)
+                            .show(account, member, function(err, result) {
                                 assert(!err, conjur.global.inspect(err));
 
-                                console.log('Pubkey:', result);
+                                console.log('Public keys for %s:', member, result);
                             });
                     });
                 });
@@ -48,11 +40,16 @@ function main(baseUrl, account, login, password) {
 }
 
 if (require.main === module) {
+		var groupId = process.argv[2];
+		assert(groupId);
+	
     // Read settings from ~/.conjurrc file
     // then generate url from `appliance_url` and
     // read login and password from ~/.netrc file
 
-    var filename = process.env.HOME + '/.conjurrc';
+    var filename = process.env.CONJURRC || process.env.HOME + '/.conjurrc';
+    
+    console.log("Loading Conjur configuration from %s. Set CONJURRC env to use a different file", filename);
 
     if (!fs.existsSync(filename)) {
         console.log('File does not exist: ' + filename);
@@ -65,8 +62,9 @@ if (require.main === module) {
         console.log('Can`t load conjurrc file: ' + e);
         process.exit(1);
     }
-
-    var baseUrl = url.parse(settings['appliance_url']);
+    
+    var applianceURL = settings['appliance_url'];
+    var baseUrl = url.parse(applianceURL);
     baseUrl = baseUrl.protocol + '//' + baseUrl.host + '/';
 
     var machine = baseUrl + 'api/authn',
@@ -75,7 +73,7 @@ if (require.main === module) {
         account = settings['account'];
 
     console.log('=========================================================================');
-    console.log('Appliance url:', settings['appliance_url']);
+    console.log('Appliance url:', applianceURL);
     console.log('Base url:', baseUrl);
     console.log('Machine url:', machine);
     console.log('Account:', account);
@@ -84,10 +82,12 @@ if (require.main === module) {
     console.log('=========================================================================');
     console.log();
 
-    // Don't forget to inject CERT file for TLS
-    // (otherwise get the TLS_REJECT_UNAUTHORIZED error
+    // Trust the Conjur certificate file for TLS
+    // (otherwise you'll get a TLS_REJECT_UNAUTHORIZED error)
     var opts = require('https').globalAgent.options;
     opts.ca = fs.readFileSync(settings['cert_file'], 'utf8');
 
-    main(baseUrl, account, login, password);
+    var endpoints = conjur.config.applianceEndpoints(applianceURL, account)
+    
+    main(endpoints, account, login, password, groupId);
 }
