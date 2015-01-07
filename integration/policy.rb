@@ -1,4 +1,4 @@
-policy "api-node-test-integration-1.4" do
+policy "api-node-test-integration-1.5" do
   alice = nil
   
   user "admin" do
