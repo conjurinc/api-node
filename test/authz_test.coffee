@@ -81,7 +81,41 @@ describe 'conjur_authz', ()->
             assert.deepEqual expectedResult, result
             done()
     
-  describe "#resource", ->
+  describe "#resources", ->
+    describe 'all resources', ->
+      it 'invokes :account/resources', (done)->
+        gently.expect g.rest, 'get', (url)->
+          assert.equal url, g.format('http://example.com/%s/resources', account)
+          {
+            'on': (arg, callback)->
+              if arg == 'complete'
+                callback([ 'foo' ], { statusCode: 200 })
+              else
+                throw 'unexpected arg : ' + arg
+          }
+
+        conjur_authz.connect('http://example.com', token).resources account, (err, result)->
+          assert !err, g.inspect(err)
+          assert.deepEqual [ 'foo' ], result
+          done()
+          
+    describe 'resources of one kind', ->
+      it 'invokes :account/resources/:kind', (done)->
+        gently.expect g.rest, 'get', (url)->
+          assert.equal url, g.format('http://example.com/%s/resources/food', account)
+          {
+            'on': (arg, callback)->
+              if arg == 'complete'
+                callback([ 'foo' ], { statusCode: 200 })
+              else
+                throw 'unexpected arg : ' + arg
+          }
+
+        conjur_authz.connect('http://example.com', token).resources account, { kind: 'food'}, (err, result)->
+          assert !err, g.inspect(err)
+          assert.deepEqual [ 'foo' ], result
+          done()
+  
     describe '#exists', ->
       stubHead = (statusCode)->
         gently.expect g.rest, 'head', (url, body)->
