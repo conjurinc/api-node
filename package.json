@@ -16,6 +16,8 @@
   "devDependencies": {
     "gently": "latest",
     "doctor": "latest",
+    "mocha": "latest",
+    "coffee-script": "latest",
     "browserify": "~3.14.1"
   }
 }
