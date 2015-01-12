@@ -6,3 +6,5 @@ integration/policy.json
 test-result.xml
 test.log
 node_modules
+*.iml
+.idea
