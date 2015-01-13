@@ -1,5 +1,12 @@
-var winston = require('winston')
-  ;
+"use strict";
 
-winston.remove(winston.transports.Console);
-winston.add(winston.transports.File, {filename: 'test.log', level: 'debug'})
+var winston = require('winston');
+
+module.exports = function(){
+    try {
+        winston.remove(winston.transports.Console);
+    }catch(e){
+        return;
+    }
+    winston.add(winston.transports.File, {filename: 'test.log', level: 'debug'});
+};
