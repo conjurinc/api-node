@@ -1,3 +1,4 @@
+xunit.xml
 report/
 *.log
 conjur-api.js
