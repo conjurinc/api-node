@@ -2,15 +2,9 @@
 
 # Testing
 
-* Install global dependencies
+* Install dependencies
 ```
-    $ sudo npm install -g mocha coffee-script gulp
-```
-
-* Load the test data set
-```
-    $ cd integration
-    $ conjur policy load -c policy.json policy.rb
+    $ npm install
 ```
 
 * Configure gulp reporting (optional)
@@ -24,4 +18,3 @@
 ```
     $ gulp
 ```
-
