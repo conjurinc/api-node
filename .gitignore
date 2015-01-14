@@ -1,9 +1,8 @@
+report/
 *.log
 conjur-api.js
-integration-result.xml
 integration/testdata
 integration/policy.json
-test-result.xml
 test.log
 node_modules
 *.iml
