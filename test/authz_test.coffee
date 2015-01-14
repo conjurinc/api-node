@@ -171,4 +171,74 @@ describe 'conjur_authz', ()->
           assert !err
           assert !allowed
           done()
-        
+
+  describe "#graph", ->
+    defaultOpts = { ancestors: true, descendants: true }
+    defaultGraph = [['parent', 'child']]
+    defaultRoles = ['a', 'b']
+    stubGet = (result, roles,  options, graph) ->
+      options ||= defaultOpts
+      graph ||= defaultGraph
+      roles ||= defaultRoles
+      gently.expect g.rest, 'get', (url, opts) ->
+        assert.equal url, g.format('http://example.com/%s/roles?%s&ancestors=%s&descendants=%s%s',
+          account, g.arrayParam('roles', roles),
+          options.ancestors, options.descendants, if  options.fromRole then "&from_role=" + g.pathEscape(options.fromRole) else '' );
+        {
+          on: (arg, callback) ->
+            assert.equal arg, 'complete'
+            if result == 'error'
+              callback new Error('error')
+            else if result == 'errorCode'
+              callback null, {statusCode: 500}
+            else
+              callback graph, {statusCode: 200}
+        }
+
+    stubGetSuccess = stubGet.bind(null, 'success')
+    stubGetError   = stubGet.bind(null, 'error')
+    stubGetFailure = stubGet.bind(null, 'errorCode')
+
+    callRoleGraph = (roleIds, options, callback) ->
+      conjur_authz.connect('http://example.com', token).graph account, roleIds, options, callback
+
+
+    it 'accepts a string', (done) ->
+      stubGetSuccess [ 'role' ]
+      callRoleGraph 'role', defaultOpts, ->
+        done()
+
+    it 'accepts an array', (done) ->
+      stubGetSuccess ['role1', 'role2']
+      callRoleGraph ['role1', 'role2'], defaultOpts, ->
+        done()
+
+    it 'fires the callback with an error when an error occurs', (done) ->
+      stubGetError ['role']
+      cb = (err, res) ->
+        assert.notEqual err, null
+        assert.equal res, null
+        done()
+      callRoleGraph 'role', defaultOpts, cb
+
+    it 'fires the callback with an error when the response status is not 200', (done) ->
+      stubGetFailure ['role']
+      cb = (err, res) ->
+        assert.notEqual err, null
+        assert.equal res, null
+        done()
+      callRoleGraph 'role', defaultOpts, cb
+
+    it 'fires the callback with (null, graph) when the request succeeds', (done) ->
+      stubGetSuccess ['role']
+      cb = (err, res) ->
+        assert.equal null, err
+        assert.deepEqual res, defaultGraph
+        done()
+      callRoleGraph 'role', defaultOpts, cb
+
+
+
+
+
+

@@ -18,6 +18,10 @@
     "doctor": "latest",
     "mocha": "latest",
     "coffee-script": "latest",
-    "browserify": "~3.14.1"
+    "browserify": "~3.14.1",
+    "gulp": "~3.8.10",
+    "gulp-jslint": "~0.2.2",
+    "gulp-mocha": "~2.0.0",
+    "xunit-file": "0.0.6"
   }
 }
