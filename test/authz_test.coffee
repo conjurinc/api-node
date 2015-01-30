@@ -176,14 +176,12 @@ describe 'conjur_authz', ()->
     defaultOpts = { ancestors: true, descendants: true }
     defaultGraph = [['parent', 'child']]
     defaultRoles = ['a', 'b']
-    stubGet = (result, roles,  options, graph) ->
+    stubGet = (result, roles, targetUrl, options, graph) ->
       options ||= defaultOpts
       graph ||= defaultGraph
       roles ||= defaultRoles
       gently.expect g.rest, 'get', (url, opts) ->
-        assert.equal url, g.format('http://example.com/%s/roles?%s&ancestors=%s&descendants=%s%s',
-          account, g.arrayParam('roles', roles),
-          options.ancestors, options.descendants, if  options.fromRole then "&from_role=" + g.pathEscape(options.fromRole) else '' );
+        assert.equal url, targetUrl;
         {
           on: (arg, callback) ->
             assert.equal arg, 'complete'
@@ -204,17 +202,17 @@ describe 'conjur_authz', ()->
 
 
     it 'accepts a string', (done) ->
-      stubGetSuccess [ 'role' ]
+      stubGetSuccess [ 'role' ], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
       callRoleGraph 'role', defaultOpts, ->
         done()
 
     it 'accepts an array', (done) ->
-      stubGetSuccess ['role1', 'role2']
+      stubGetSuccess ['role1', 'role2'], 'http://example.com/the-account/roles?roles[]=role1&roles[]=role2&ancestors=true&descendants=true'
       callRoleGraph ['role1', 'role2'], defaultOpts, ->
         done()
 
     it 'fires the callback with an error when an error occurs', (done) ->
-      stubGetError ['role']
+      stubGetError ['role'], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
       cb = (err, res) ->
         assert.notEqual err, null
         assert.equal res, null
@@ -222,7 +220,7 @@ describe 'conjur_authz', ()->
       callRoleGraph 'role', defaultOpts, cb
 
     it 'fires the callback with an error when the response status is not 200', (done) ->
-      stubGetFailure ['role']
+      stubGetFailure ['role'], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
       cb = (err, res) ->
         assert.notEqual err, null
         assert.equal res, null
@@ -230,15 +228,9 @@ describe 'conjur_authz', ()->
       callRoleGraph 'role', defaultOpts, cb
 
     it 'fires the callback with (null, graph) when the request succeeds', (done) ->
-      stubGetSuccess ['role']
+      stubGetSuccess ['role'], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
       cb = (err, res) ->
         assert.equal null, err
         assert.deepEqual res, defaultGraph
         done()
       callRoleGraph 'role', defaultOpts, cb
-
-
-
-
-
-
