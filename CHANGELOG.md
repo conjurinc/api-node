@@ -1,3 +1,6 @@
+# v4.5.0
+* Support for groups/gidnumbers.
+
 # v4.4.1
 * Fixed bug in authz.graph.
 
