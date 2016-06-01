@@ -1,17 +1,14 @@
 {
   "name": "conjur-api",
   "version": "4.5.2",
+  "repository": "https://github.com/conjurinc/api-node",
   "dependencies": {
-    "underscore": "latest",
-    "async": "latest",
-    "winston": "latest",
-    "restler": "git://github.com/berryboy/restler#master"
+    "async": "^2.0.0-rc.5",
+    "restler": "^2.0.1",
+    "underscore": "^1.8.3",
+    "winston": "^2.2.0"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "lib/index.js",
   "devDependencies": {
     "browserify": "^13.0.1",
