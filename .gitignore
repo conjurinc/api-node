@@ -10,3 +10,4 @@ node_modules
 .idea
 cid
 integration/conjur.json
+conjur.json
