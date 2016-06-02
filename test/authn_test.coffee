@@ -14,12 +14,13 @@ describe 'conjur_authn', ()->
     
     stubAuthentication = (statusCode)->
       gently.expect g.rest, 'post', (url, body)->
+        self = {removeAllListeners: () -> };
         assert.equal url, 'http://example.com/users/the-user/authenticate'
         assert.deepEqual body, { data: 'the-key' }
         {
           'on': (arg, callback)->
             if arg == 'complete'
-              callback('the-token', { statusCode: statusCode })
+              callback.call(self, 'the-token', { statusCode: statusCode })
             else
               throw 'unexpected arg : ' + arg
         }
@@ -28,7 +29,7 @@ describe 'conjur_authn', ()->
       it 'is denied', (done)->
         stubAuthentication 403
         conjur_authn.connect('http://example.com').authenticate username, apiKey, (result, token)->
-          assert.equal result, 'POST http://example.com/users/the-user/authenticate failed : 403'
+          assert.equal result.message, 'Authentication failed: 403'
           assert !token
           done()
     
