@@ -16,7 +16,7 @@ function main(endpoints, account, login, password, groupId) {
                 .group(account, groupId)
                 .members(function(err, result) {
                     assert(!err, conjur.global.inspect(err));
-                    console.log('Members:', conjur.global.u.map(result, function(r){ return r.member }));
+                    console.log('Members:', conjur.global.u.map(result, function(r){ return r.member; }));
                     console.log();
 
                     result.forEach(function(g) {

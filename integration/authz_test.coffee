@@ -2,18 +2,14 @@ assert = require('assert')
 gently = new (require('gently'))
 g = require('../lib/global')
 integration = require('./integration')
-conjur_authn = require('../lib/conjur/authn')
 conjur_authz = require('../lib/conjur/authz')
 
 describe 'conjur_authz', ->
   admin_token = null
   
   before (done)->
-    integration.authenticate (err, token)->
-      assert !err, g.inspect(err)
-      assert token
+    integration.authenticate done, (token) ->
       admin_token = token
-      done()
 
   describe '#role', ->
     describe '#members', ->
