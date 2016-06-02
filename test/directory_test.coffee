@@ -2,6 +2,7 @@ assert = require('assert')
 gently = new (require('gently'))
 g = require('../lib/global')
 conjur_dir = require('../lib/conjur/directory')
+{makeEvents} = require('./helpers')
 
 describe 'conjur_dir', ()->
   account = 'the-account'
@@ -22,13 +23,12 @@ describe 'conjur_dir', ()->
           assert.equal url, g.format(
             "http://example.com/#{path}/#{numberType}?id[]=%s&id[]=%s",
             encodeURIComponent(login1), encodeURIComponent(login2))
-          {
-            'on': (arg, callback)->
+          makeEvents (arg, callback)->
               if arg == 'complete'
                 callback(result, { statusCode: statusCode })
               else
                 throw new Error 'unexpected arg : ' + arg
-          }
+          
 
       describe 'with status code 404', ()->
         it 'returns false', (done)->
