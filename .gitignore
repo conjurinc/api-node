@@ -8,3 +8,5 @@ test.log
 node_modules
 *.iml
 .idea
+cid
+integration/conjur.json
