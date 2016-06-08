@@ -49,11 +49,25 @@ function chooseMochaReporter(){
     return 'spec';
 }
 
+function isJenkins(){
+    return process.env.hasOwnProperty('JENKINS_HOME');
+}
+
+function mochaTimeout(){
+    if(isJenkins()){
+        return 30000; // 30 seconds, because we HATESES TIMEOUT FAILURES
+    }else{
+        return 2000; // default 2 seconds
+    }
+}
+
 
 
 var mochaOpts = {
-    reporter: chooseMochaReporter()
+    reporter: chooseMochaReporter(),
+    timeout: mochaTimeout()
 };
+
 
 var jslintOpts = {
     // assume node.js
