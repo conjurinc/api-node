@@ -20,7 +20,13 @@ if [ -z $KEEP ]; then
 fi
 
 
-docker run --privileged -d -p 443:443 -v $PWD/integration:/app/integration --cidfile conjur-cid localhost:8080/conjur-appliance-cuke-master:4.7-stable
+docker run \
+    --privileged \
+    -d \
+    -p 443:443 \
+    -v $PWD/integration:/app/integration \
+    --cidfile conjur-cid \
+    registry.tld/conjur-appliance-cuke-master:4.7-stable
 
 # wait_for_conjur expects conjur to resolve to the conjur appliance
 docker exec $(cat conjur-cid) bash -c "echo '127.0.0.1 conjur' >> /etc/hosts"
