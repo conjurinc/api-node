@@ -91,7 +91,12 @@ gulp.task('features', function(){
 
 gulp.task('default', ['lint', 'test']);
 
-gulp.task('jenkins', ['test', 'features']);
+// do this as a separate function to keep it from writing twice to xunit results
+gulp.task('jenkins', function(){
+    silenceLogger();
+    return gulp.src(tests.concat(features), {read: false})
+        .pipe(mocha(mochaOpts));
+});
 
 gulp.task('watch', function(){
     gulp.watch(['lib/**/*.js', 'test/**/*.coffee', 'gulpfile.js'], ['default']);
