@@ -30,12 +30,13 @@ require('coffee-script/register');
 
 var sources = ['lib/**/*.js'];
 var tests   = ['test/**/*_test.coffee'];
+var features = ['integration/**/*_test.coffee'];
 
 
 function chooseMochaReporter(){
     // if TEST_REPORTER is set, use that
-    if(process.env.TEST_REPORTER){
-        return process.env.TEST_REPORTER;
+    if(process.env['TEST_REPORTER']){
+        return process.env['TEST_REPORTER'];
     }
 
     if(process.stdout.isTTY){
@@ -82,7 +83,15 @@ gulp.task('test', function(){
         .pipe(mocha(mochaOpts));
 });
 
+gulp.task('features', function(){
+    silenceLogger();
+    return gulp.src(features, {read: false})
+        .pipe(mocha(mochaOpts));
+});
+
 gulp.task('default', ['lint', 'test']);
+
+gulp.task('jenkins', ['test', 'features']);
 
 gulp.task('watch', function(){
     gulp.watch(['lib/**/*.js', 'test/**/*.coffee', 'gulpfile.js'], ['default']);

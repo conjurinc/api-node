@@ -2,6 +2,10 @@ assert = require('assert')
 config = require('../lib/conjur/config')
 
 describe 'config', ()->
+  describe 'applianceEndpoints', ->
+    applianceUrl = 'https://conjur/api'
+    account = 'the-account'
+    
   describe 'env = development', ->
     env = 'development'
     describe 'stack = ci', ->
