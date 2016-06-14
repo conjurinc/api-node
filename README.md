@@ -1,4 +1,4 @@
- # Conjur API for Node.js
+# Conjur API for Node.js
 
 ## Node Requirements
 
