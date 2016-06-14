@@ -1,5 +1,9 @@
 # Conjur API for Node.js
 
+## Node Requirements
+
+You must use a node version of at least 4.0.
+
 # Testing
 
 * Install dependencies

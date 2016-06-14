@@ -30,12 +30,13 @@ require('coffee-script/register');
 
 var sources = ['lib/**/*.js'];
 var tests   = ['test/**/*_test.coffee'];
+var features = ['integration/**/*_test.coffee'];
 
 
 function chooseMochaReporter(){
     // if TEST_REPORTER is set, use that
-    if(process.env.TEST_REPORTER){
-        return process.env.TEST_REPORTER;
+    if(process.env['TEST_REPORTER']){
+        return process.env['TEST_REPORTER'];
     }
 
     if(process.stdout.isTTY){
@@ -48,11 +49,25 @@ function chooseMochaReporter(){
     return 'spec';
 }
 
+function isJenkins(){
+    return process.env.hasOwnProperty('JENKINS_HOME');
+}
+
+function mochaTimeout(){
+    if(isJenkins()){
+        return 30000; // 30 seconds, because we HATESES TIMEOUT FAILURES
+    }else{
+        return 2000; // default 2 seconds
+    }
+}
+
 
 
 var mochaOpts = {
-    reporter: chooseMochaReporter()
+    reporter: chooseMochaReporter(),
+    timeout: mochaTimeout()
 };
+
 
 var jslintOpts = {
     // assume node.js
@@ -82,7 +97,20 @@ gulp.task('test', function(){
         .pipe(mocha(mochaOpts));
 });
 
+gulp.task('features', function(){
+    silenceLogger();
+    return gulp.src(features, {read: false})
+        .pipe(mocha(mochaOpts));
+});
+
 gulp.task('default', ['lint', 'test']);
+
+// do this as a separate function to keep it from writing twice to xunit results
+gulp.task('jenkins', function(){
+    silenceLogger();
+    return gulp.src(tests.concat(features), {read: false})
+        .pipe(mocha(mochaOpts));
+});
 
 gulp.task('watch', function(){
     gulp.watch(['lib/**/*.js', 'test/**/*.coffee', 'gulpfile.js'], ['default']);

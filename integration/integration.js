@@ -1,25 +1,74 @@
 var u = require('underscore'),
-	g = require('../lib/global')
-	authn = require('../lib/conjur/authn')
-	;
+	g = require('../lib/global'),
+	authn = require('../lib/conjur/authn');
 
-var policy     = JSON.parse(require('fs').readFileSync('./integration/policy.json'));
-var adminId = u.find(u.keys(policy['api_keys']), function(id) {
-	return id.match('admin');
-})
-var adminLogin = adminId.split(':')[2];
-var adminKey   = policy['api_keys'][adminId];
 
-g.assert(adminLogin)
-g.assert(adminKey)
+
+// Standard for the appliance.
+var adminLogin = 'admin',
+    adminPassword = 'secret',
+    conjurAccount = 'cucumber',
+    applianceUrl  = 'https://conjur/api';
+
+/**
+ * Authenticate and call cb with (error, token)
+ * @param cb function(error, token)
+ */
+function authenticate(cb){
+    authn.connect(applianceUrl + '/authn').authenticate(adminLogin, adminPassword, cb);
+}
+
+function resolveNamespace(){
+    path = __dirname + "/../conjur.json";
+
+    try{
+        var context = require(path);
+    }catch(e){
+        console.warn("Couldn't load context from '" + path + "'");
+        return null;
+    }
+
+
+    var key = u.keys(context)[0];
+    var match = /^.*?@(.*)$/.exec(key);
+
+    if(!match){
+        console.warn("Couldn't find a namespace in " + key);
+        return null;
+    }
+
+    return match[1];
+}
+
+var namespace = resolveNamespace();
+
+function namespaceUser(user){
+    if(namespace){
+        return user + "@" + namespace;
+    }else{
+        return user;
+    }
+}
+
+function namespaceGroup(group){
+    if(namespace){
+        return namespace + "/" + group;
+    }else{
+        return group;
+    }
+}
+
+// HACK disable cert verification
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 
 module.exports = {
-	policy: policy,
-	resourceNamespace: policy['policy'],
-	userNamespace: policy['policy'].replace(/[@\.\/]/g, '-'),
-	adminLogin: adminLogin,
-	adminKey: adminKey,
-	authenticate: function(cb) {
-	  authn.connect('https://authn-ci-conjur.herokuapp.com').authenticate(adminLogin, adminKey, cb);
-	}
-}
+    authenticate: authenticate,
+    namespace: namespace,
+    namespaceUser: namespaceUser,
+    namespaceGroup: namespaceGroup,
+    adminLogin: adminLogin,
+    adminPassword: adminPassword,
+    conjurAccount: conjurAccount,
+    applianceUrl: applianceUrl
+};

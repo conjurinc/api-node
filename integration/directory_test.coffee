@@ -1,30 +1,28 @@
 assert = require('assert')
-gently = new (require('gently'))
 g = require('../lib/global')
-integration = require('./integration')
-conjur_authn = require('../lib/conjur/authn')
-conjur_group = require('../lib/conjur/group')
+I = require('./integration')
+authn = require('../lib/conjur/authn')
+groups = require('../lib/conjur/group')
 
 endpoints = {
-  authz: (account) ->
-    assert account == 'ci'
-    'https://authz-ci-conjur.herokuapp.com'
+  authz: (account) -> I.applianceUrl + '/authz'
 }
 
 describe 'conjur_directory', ->
   admin_token = null
   
   before (done)->
-    integration.authenticate (err, token)->
-      assert !err, g.inspect(err)
-      assert token
+    I.authenticate (err, token)->
       admin_token = token
       done()
 
   describe '#group', ->
     describe '#members', ->
-      it 'list members of the group', (done)->
-        conjur_group.connect(endpoints, admin_token).group('ci', "#{integration.resourceNamespace}/everyone").members (err, result)->
+      it 'lists members of the group', (done)->
+        client = groups.connect(endpoints, admin_token)
+        client.group(I.conjurAccount, I.namespaceGroup('everyone')).members (err, result)->
           assert !err, g.inspect(err)
-          assert.notEqual(result.length, 0)
+          console.log("results " + g.inspect(result));
+          members = result.map (r) -> r.member.split(':')[2]
+          assert.deepEqual members.sort(), ['admin', I.namespaceUser('alice')]
           done()

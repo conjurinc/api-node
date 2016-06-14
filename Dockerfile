@@ -1,7 +1,7 @@
-FROM dockerfile/nodejs
+FROM node:4-onbuild
 
 ADD . /app
 
 WORKDIR /app
 
-RUN npm update
+RUN npm install

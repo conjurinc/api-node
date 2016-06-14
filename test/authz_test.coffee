@@ -2,10 +2,11 @@ assert = require('assert')
 gently = new (require('gently'))
 g = require('../lib/global')
 conjur_authz = require('../lib/conjur/authz')
+{makeEvents}  = require('./helpers')
 
 describe 'conjur_authz', ()->
   describe '#parseResourceId', ->
-    it 'interprents an Array', ->
+    it 'interprets an Array', ->
       assert.deepEqual conjur_authz.parseResourceId([1,2,3]), {"account":"1","kind":"2","identifier":["3"]}
     it 'parses a string', ->
       assert.deepEqual conjur_authz.parseResourceId([1,2,3].join(':')), {"account":"1","kind":"2","identifier":["3"]}
@@ -28,14 +29,12 @@ describe 'conjur_authz', ()->
       stubGet = (statusCode)->
         gently.expect g.rest, 'get', (url, body)->
           assert.equal url, g.format('http://example.com/%s/roles/%s/%s?check&privilege=%s&resource_id=%s', account, roleKind, roleIdentifier, privilege, account+"%3A"+kind+"%3A"+identifier)
-          {
-            'on': (arg, callback)->
-              if arg == 'complete'
-                callback(null, { statusCode: statusCode })
-              else
-                throw 'unexpected arg : ' + arg
-          }
-          
+          makeEvents (arg, callback)->
+            if arg == 'complete'
+              callback(null, { statusCode: statusCode })
+            else
+              throw 'unexpected arg : ' + arg
+
       it 'returns true for 204', (done)->
         stubGet 204
         role.checkPermission resourceId, privilege, (err, allowed)->
@@ -56,13 +55,11 @@ describe 'conjur_authz', ()->
       stubGet = (result, statusCode)->
         gently.expect g.rest, 'get', (url, body)->
           assert.equal url, g.format('http://example.com/%s/roles/allowed_to/%s/%s/%s', account, permission, kind, identifier)
-          {
-            'on': (arg, callback)->
-              if arg == 'complete'
-                callback(result, { statusCode: statusCode })
-              else
-                throw 'unexpected arg : ' + arg
-          }
+          makeEvents (arg, callback)->
+            if arg == 'complete'
+              callback(result, { statusCode: statusCode })
+            else
+              throw 'unexpected arg : ' + arg
   
       describe 'with status code 404', ()->
         it 'fails', (done)->
@@ -86,13 +83,11 @@ describe 'conjur_authz', ()->
       it 'invokes :account/resources', (done)->
         gently.expect g.rest, 'get', (url)->
           assert.equal url, g.format('http://example.com/%s/resources', account)
-          {
-            'on': (arg, callback)->
-              if arg == 'complete'
-                callback([ 'foo' ], { statusCode: 200 })
-              else
-                throw 'unexpected arg : ' + arg
-          }
+          makeEvents (arg, callback)->
+           if arg == 'complete'
+             callback([ 'foo' ], { statusCode: 200 })
+           else
+             throw 'unexpected arg : ' + arg
 
         conjur_authz.connect('http://example.com', token).resources account, (err, result)->
           assert !err, g.inspect(err)
@@ -103,13 +98,11 @@ describe 'conjur_authz', ()->
       it 'invokes :account/resources/:kind', (done)->
         gently.expect g.rest, 'get', (url)->
           assert.equal url, g.format('http://example.com/%s/resources/food', account)
-          {
-            'on': (arg, callback)->
-              if arg == 'complete'
-                callback([ 'foo' ], { statusCode: 200 })
-              else
-                throw 'unexpected arg : ' + arg
-          }
+          makeEvents (arg, callback)->
+            if arg == 'complete'
+              callback([ 'foo' ], { statusCode: 200 })
+            else
+              throw 'unexpected arg : ' + arg
 
         conjur_authz.connect('http://example.com', token).resources account, { kind: 'food'}, (err, result)->
           assert !err, g.inspect(err)
@@ -120,14 +113,12 @@ describe 'conjur_authz', ()->
       stubHead = (statusCode)->
         gently.expect g.rest, 'head', (url, body)->
           assert.equal url, g.format('http://example.com/%s/resources/%s/%s', account, kind, identifier)
-          {
-            'on': (arg, callback)->
-              if arg == 'complete'
-                callback(null, { statusCode: statusCode })
-              else
-                throw 'unexpected arg : ' + arg
-          }
-  
+          makeEvents (arg, callback)->
+            if arg == 'complete'
+              callback(null, { statusCode: statusCode })
+            else
+              throw 'unexpected arg : ' + arg
+
       describe 'with status code 404', ()->
         it 'returns false', (done)->
           stubHead 404
@@ -150,14 +141,11 @@ describe 'conjur_authz', ()->
       stubGet = (statusCode)->
         gently.expect g.rest, 'get', (url, body)->
           assert.equal url, g.format('http://example.com/%s/resources/%s/%s?check&privilege=%s', account, kind, identifier, privilege)
-          {
-            'on': (arg, callback)->
+          makeEvents  (arg, callback)->
               if arg == 'complete'
                 callback(null, { statusCode: statusCode })
               else
                 throw 'unexpected arg : ' + arg
-          }
-          
       it 'returns true for 204', (done)->
         stubGet 204
         resource.checkPermission privilege, (err, allowed)->
@@ -182,8 +170,7 @@ describe 'conjur_authz', ()->
       roles ||= defaultRoles
       gently.expect g.rest, 'get', (url, opts) ->
         assert.equal url, targetUrl;
-        {
-          on: (arg, callback) ->
+        makeEvents (arg, callback) ->
             assert.equal arg, 'complete'
             if result == 'error'
               callback new Error('error')
@@ -191,7 +178,6 @@ describe 'conjur_authz', ()->
               callback null, {statusCode: 500}
             else
               callback graph, {statusCode: 200}
-        }
 
     stubGetSuccess = stubGet.bind(null, 'success')
     stubGetError   = stubGet.bind(null, 'error')
