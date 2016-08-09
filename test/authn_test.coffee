@@ -12,11 +12,12 @@ describe 'conjur_authn', ()->
   describe '#authenticate', ->
     username = 'the-user'
     apiKey = 'the-key'
+    account = 'the-account'
     
     stubAuthentication = (statusCode)->
       gently.expect g.rest, 'post', (url, body)->
         self = {removeAllListeners: () -> };
-        assert.equal url, 'http://example.com/users/the-user/authenticate'
+        assert.equal url, 'http://example.com/authn/the-account/the-user/authenticate'
         assert.deepEqual body, { data: 'the-key' }
         makeEvents (arg, callback)->
           if arg == 'complete'
@@ -27,7 +28,7 @@ describe 'conjur_authn', ()->
     describe 'with status code 403', ()->
       it 'is denied', (done)->
         stubAuthentication 403
-        conjur_authn.connect('http://example.com').authenticate username, apiKey, (result, token)->
+        conjur_authn.connect('http://example.com').authenticate account, username, apiKey, (result, token)->
           assert.equal result.message, 'Authentication failed: 403'
           assert !token
           done()
@@ -35,7 +36,7 @@ describe 'conjur_authn', ()->
     describe 'with status code 200', ()->
       it 'authenticates', (done)->
         stubAuthentication 200
-        conjur_authn.connect('http://example.com').authenticate username, apiKey, (result, token)->
+        conjur_authn.connect('http://example.com').authenticate account, username, apiKey, (result, token)->
           assert !result
           assert.equal token, 'the-token'
           done(result)

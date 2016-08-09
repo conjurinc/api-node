@@ -2,12 +2,8 @@ xunit.xml
 report/
 *.log
 conjur-api.js
-integration/testdata
-integration/policy.json
 test.log
 node_modules
 *.iml
 .idea
-cid
-integration/conjur.json
-conjur.json
+data_key

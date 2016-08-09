@@ -28,7 +28,7 @@ describe 'conjur_authz', ()->
       
       stubGet = (statusCode)->
         gently.expect g.rest, 'get', (url, body)->
-          assert.equal url, g.format('http://example.com/%s/roles/%s/%s?check&privilege=%s&resource_id=%s', account, roleKind, roleIdentifier, privilege, account+"%3A"+kind+"%3A"+identifier)
+          assert.equal url, g.format('http://example.com/roles/%s/%s/%s?check&privilege=%s&resource=%s', account, roleKind, roleIdentifier, privilege, account+"%3A"+kind+"%3A"+identifier)
           makeEvents (arg, callback)->
             if arg == 'complete'
               callback(null, { statusCode: statusCode })
@@ -54,7 +54,7 @@ describe 'conjur_authz', ()->
       
       stubGet = (result, statusCode)->
         gently.expect g.rest, 'get', (url, body)->
-          assert.equal url, g.format('http://example.com/%s/roles/allowed_to/%s/%s/%s', account, permission, kind, identifier)
+          assert.equal url, g.format('http://example.com/resources/%s/%s/%s?permitted_roles&privilege=%s', account, kind, identifier, permission)
           makeEvents (arg, callback)->
             if arg == 'complete'
               callback(result, { statusCode: statusCode })
@@ -64,8 +64,8 @@ describe 'conjur_authz', ()->
       describe 'with status code 404', ()->
         it 'fails', (done)->
           stubGet [], 404
-          resource.allowedTo permission, (err, result)->
-            assert.deepEqual err, { code: 404, message: "HTTP status code 404 fetching 'http://example.com/the-account/roles/allowed_to/fry/pig/bacon'" }
+          resource.permittedRoles permission, (err, result)->
+            assert.deepEqual err, { code: 404, message: "HTTP status code 404 fetching 'http://example.com/resources/the-account/pig/bacon?permitted_roles&privilege=fry'" }
             assert !result
             done()
       
@@ -73,7 +73,7 @@ describe 'conjur_authz', ()->
         it 'returns the result', (done)->
           expectedResult = [ 'the-account:user:the-user' ]
           stubGet [ account+':user:the-user' ], 200
-          resource.allowedTo permission, (err, result)->
+          resource.permittedRoles permission, (err, result)->
             assert !err
             assert.deepEqual expectedResult, result
             done()
@@ -82,7 +82,7 @@ describe 'conjur_authz', ()->
     describe 'all resources', ->
       it 'invokes :account/resources', (done)->
         gently.expect g.rest, 'get', (url)->
-          assert.equal url, g.format('http://example.com/%s/resources', account)
+          assert.equal url, g.format('http://example.com/resources/%s', account)
           makeEvents (arg, callback)->
            if arg == 'complete'
              callback([ 'foo' ], { statusCode: 200 })
@@ -97,7 +97,7 @@ describe 'conjur_authz', ()->
     describe 'resources of one kind', ->
       it 'invokes :account/resources/:kind', (done)->
         gently.expect g.rest, 'get', (url)->
-          assert.equal url, g.format('http://example.com/%s/resources/food', account)
+          assert.equal url, g.format('http://example.com/resources/%s/food', account)
           makeEvents (arg, callback)->
             if arg == 'complete'
               callback([ 'foo' ], { statusCode: 200 })
@@ -112,7 +112,7 @@ describe 'conjur_authz', ()->
     describe '#exists', ->
       stubHead = (statusCode)->
         gently.expect g.rest, 'head', (url, body)->
-          assert.equal url, g.format('http://example.com/%s/resources/%s/%s', account, kind, identifier)
+          assert.equal url, g.format('http://example.com/resources/%s/%s/%s', account, kind, identifier)
           makeEvents (arg, callback)->
             if arg == 'complete'
               callback(null, { statusCode: statusCode })
@@ -140,7 +140,7 @@ describe 'conjur_authz', ()->
       
       stubGet = (statusCode)->
         gently.expect g.rest, 'get', (url, body)->
-          assert.equal url, g.format('http://example.com/%s/resources/%s/%s?check&privilege=%s', account, kind, identifier, privilege)
+          assert.equal url, g.format('http://example.com/resources/%s/%s/%s?check&privilege=%s', account, kind, identifier, privilege)
           makeEvents  (arg, callback)->
               if arg == 'complete'
                 callback(null, { statusCode: statusCode })
@@ -160,63 +160,3 @@ describe 'conjur_authz', ()->
           assert !allowed
           done()
 
-  describe "#graph", ->
-    defaultOpts = { ancestors: true, descendants: true }
-    defaultGraph = [['parent', 'child']]
-    defaultRoles = ['a', 'b']
-    stubGet = (result, roles, targetUrl, options, graph) ->
-      options ||= defaultOpts
-      graph ||= defaultGraph
-      roles ||= defaultRoles
-      gently.expect g.rest, 'get', (url, opts) ->
-        assert.equal url, targetUrl;
-        makeEvents (arg, callback) ->
-            assert.equal arg, 'complete'
-            if result == 'error'
-              callback new Error('error')
-            else if result == 'errorCode'
-              callback null, {statusCode: 500}
-            else
-              callback graph, {statusCode: 200}
-
-    stubGetSuccess = stubGet.bind(null, 'success')
-    stubGetError   = stubGet.bind(null, 'error')
-    stubGetFailure = stubGet.bind(null, 'errorCode')
-
-    callRoleGraph = (roleIds, options, callback) ->
-      conjur_authz.connect('http://example.com', token).graph account, roleIds, options, callback
-
-
-    it 'accepts a string', (done) ->
-      stubGetSuccess [ 'role' ], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
-      callRoleGraph 'role', defaultOpts, ->
-        done()
-
-    it 'accepts an array', (done) ->
-      stubGetSuccess ['role1', 'role2'], 'http://example.com/the-account/roles?roles[]=role1&roles[]=role2&ancestors=true&descendants=true'
-      callRoleGraph ['role1', 'role2'], defaultOpts, ->
-        done()
-
-    it 'fires the callback with an error when an error occurs', (done) ->
-      stubGetError ['role'], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
-      cb = (err, res) ->
-        assert.notEqual err, null
-        assert.equal res, null
-        done()
-      callRoleGraph 'role', defaultOpts, cb
-
-    it 'fires the callback with an error when the response status is not 200', (done) ->
-      stubGetFailure ['role'], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
-      cb = (err, res) ->
-        assert.notEqual err, null
-        assert.equal res, null
-        done()
-      callRoleGraph 'role', defaultOpts, cb
-
-    it 'fires the callback with (null, graph) when the request succeeds', (done) ->
-      stubGetSuccess ['role'], 'http://example.com/the-account/roles?roles[]=role&ancestors=true&descendants=true'
-      cb = (err, res) ->
-        assert.equal null, err
-        assert.deepEqual res, defaultGraph
-        done()
-      callRoleGraph 'role', defaultOpts, cb

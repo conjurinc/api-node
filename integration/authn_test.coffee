@@ -7,16 +7,15 @@ describe 'Authentication API', ->
   describe 'authn.authenticate()', ->
     describe 'with valid credentials', ->
       it 'issues a token', (done)->
-        client = authn.connect(I.applianceUrl + '/authn')
-        client.authenticate I.adminLogin, I.adminPassword, (error, token)->
-          assert !error, g.inspect(error)
-          assert token
-          done()
+        I.login (err, apiKey)->
+          authn.connect(I.applianceUrl).authenticate I.conjurAccount, I.adminLogin, apiKey, (err, token)->
+            assert !err, g.inspect(err)
+            assert token
+            done()
 
     describe 'with invalid credentials', ->
       it 'is denied', (done)->
-        client = authn.connect(I.applianceUrl + '/authn')
-        client.authenticate 'foo', 'bar', (err,token) ->
+        authn.connect(I.applianceUrl).authenticate I.conjurAccount, I.adminLogin, 'baz', (err, token)->
           assert.equal err.message, "Authentication failed: 401"
           assert !token
           done()

@@ -1,7 +1,11 @@
 FROM node:4-onbuild
 
-ADD . /app
+ADD test.sh /
+
+RUN mkdir /app
 
 WORKDIR /app
 
-RUN npm install
+ADD package.json .
+
+ENTRYPOINT [ "/test.sh" ]
