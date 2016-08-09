@@ -1,15 +1,22 @@
 ---
 - !user test
+  public_keys:
+  - ssh-rsa ssh-rsa AAAAB3NzHhIqxF alice@home
+
 - !webservice the-service
+
 - !user
   id: alice
   owner: !user test
   public_keys:
     - ssh-rsa blahblah alice@whatever
+
 - !group everyone
+
 - !grant
   role: !group everyone
   member: !user alice
+
 - !permit
   role: !user alice
   resource: !webservice the-service
