@@ -9,5 +9,5 @@ describe 'conjur_pubkeys', ->
       it 'shows pubkeys without authentication', (done)->
         Pubkeys.connect(I.applianceUrl).show I.conjurAccount, 'user', 'alice', (err, result)->
           assert !err, g.inspect(err)
-          assert.equal result, "ssh-rsa ssh-rsa AAAAB3NzHhIqxF alice@home\n"
+          assert.equal result, "ssh-rsa AAAAB3NzHhIqxF alice@home\n"
           done()

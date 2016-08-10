@@ -57,7 +57,7 @@ docker run --rm \
     -e TEST_REPORTER=xunit-file \
     -e XUNIT_FILE=report/xunit.xml \
     -v $PWD:/app \
-    --link $cid:conjur \
+    --link ${cid}:conjur \
     api-node:${job}
 
 echo "Test results are available in report/xunit.xml"

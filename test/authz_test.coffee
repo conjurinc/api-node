@@ -7,9 +7,11 @@ conjur_authz = require('../lib/conjur/authz')
 describe 'conjur_authz', ()->
   describe '#parseResourceId', ->
     it 'interprets an Array', ->
-      assert.deepEqual conjur_authz.parseResourceId([1,2,3]), {"account":"1","kind":"2","identifier":["3"]}
+      assert.deepEqual conjur_authz.parseResourceId([1,2,3]), {"account":"1","kind":"2","identifier":"3"}
     it 'parses a string', ->
-      assert.deepEqual conjur_authz.parseResourceId([1,2,3].join(':')), {"account":"1","kind":"2","identifier":["3"]}
+      assert.deepEqual conjur_authz.parseResourceId("1:2:3"), {"account":"1","kind":"2","identifier":"3"}
+    it 'preserves colons in the identifier', ->
+      assert.deepEqual conjur_authz.parseResourceId("1:2:3:4"), {"account":"1","kind":"2","identifier":"3:4"}
 
   account = 'the-account'
   kind = 'pig'
