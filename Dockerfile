@@ -11,6 +11,8 @@ ADD package.json .
 
 RUN npm install
 
+ENV NODE_PATH /app
+
 ADD test.sh /
 
 ENTRYPOINT [ "/test.sh" ]
