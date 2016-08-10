@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Conjur Inc
+ * Copyright (C) 2016 Conjur Inc
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -60,8 +60,6 @@ function mochaTimeout(){
         return 2000; // default 2 seconds
     }
 }
-
-
 
 var mochaOpts = {
     reporter: chooseMochaReporter(),

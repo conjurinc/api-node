@@ -11,6 +11,8 @@
 
 - !group everyone
 
+- !variable db-password
+
 - !grant
   role: !group everyone
   member: !user alice
