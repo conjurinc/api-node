@@ -17,9 +17,9 @@ describe 'conjur_secrets', ->
     describe '#update', ->
       it 'adds a new secret value and then fetches it', (done)->
         resourceId = [I.conjurAccount, 'variable', 'db-password' ];
-        secrets.connect(I.applianceUrl, admin_token).update resourceId, 'new-value', (err, result)->
+        secrets.connect(I.applianceUrl, admin_token).secret(resourceId).update 'new-value', (err, result)->
           assert !err, g.inspect(err)
-          secrets.connect(I.applianceUrl, admin_token).fetch resourceId, (err, result)->
+          secrets.connect(I.applianceUrl, admin_token).secret(resourceId).fetch (err, result)->
             assert !err, g.inspect(err)
             assert.equal 'new-value', result
             done()
