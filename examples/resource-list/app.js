@@ -14,11 +14,11 @@ if (require.main === module) {
     var apiKey = process.env.CONJUR_AUTHN_API_KEY;
 
     console.log('=========================================================================');
-    console.log('Base url:', baseUrl);
-    console.log('Account:', account);
-    console.log('Login:', login);
-    console.log('Password:', password);
-    console.log('API key:', apiKey);
+    console.log('Base url :', baseUrl);
+    console.log('Account  :', account);
+    console.log('Login    :', login);
+    console.log('Password :', password);
+    console.log('API key  :', apiKey);
     console.log('=========================================================================');
     console.log();
 
@@ -63,11 +63,20 @@ if (require.main === module) {
                         console.log("Fetching value of variables %s", variables);
                         async.map(variables,
                             function(id, vcb) {
-                                connection.secrets().secret(id).fetch(vcb);
+                                connection.secrets().secret(id).fetch(function (err, value) {
+                                    if ( err ) {
+                                        if ( err.code == 404 ) {
+                                            err = null;
+                                            value = null;
+                                        }
+                                        else {
+                                            return vcb(err);
+                                        }
+                                    }
+                                    return vcb(err, value);
+                                });
                             },
                             function(err, values) {
-                                if ( err ) return cb(err);
-
                                 console.log("Values:");
                                 console.log(values);
                                 ccb(null);

@@ -1,16 +1,19 @@
 pg:
   image: postgres:9.3
 
+example:
+  image: conjurinc/possum-example
+  entrypoint: /bin/sh
+
 possum:
   image: conjurinc/possum
-  command: server -a cucumber -f /run/possum/policy/conjur.yml
+  command: server -a example -f /var/lib/possum-example/policy/conjur.yml
   environment:
     DATABASE_URL: postgres://postgres@pg/postgres
     POSSUM_ADMIN_PASSWORD: secret
-    CONJUR_PASSWORD_ALICE: secret
     POSSUM_DATA_KEY:
-  volumes:
-  - ../integration:/run/possum/policy/
+  volumes_from:
+  - example
   links:
   - pg:pg
 
@@ -23,4 +26,3 @@ api:
   - ..:/app
   links:
   - possum:conjur
-
