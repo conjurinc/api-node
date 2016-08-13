@@ -17,11 +17,14 @@ possum:
   links:
   - pg:pg
 
-api:
+client:
   build: ..
   entrypoint: bash
   environment:
-    CONJUR_APPLIANCE_URL: http://possum
+    CONJUR_URL: http://conjur
+    CONJUR_ACCOUNT: example
+    CONJUR_AUTHN_LOGIN: admin
+    CONJUR_AUTHN_PASSWORD: secret
   volumes:
   - ..:/app
   links:

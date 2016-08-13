@@ -10,4 +10,4 @@ fi
 export POSSUM_DATA_KEY="$(cat data_key)"
 
 docker-compose up -d pg possum
-docker-compose run --rm api
+docker-compose run --rm client
