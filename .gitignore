@@ -11,3 +11,4 @@ node_modules
 cid
 integration/conjur.json
 conjur.json
+*.DS_Store
