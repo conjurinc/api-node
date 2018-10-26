@@ -1,5 +1,7 @@
 # Conjur API for Node.js
 
+**IMPORTANT: THIS API CLIENT IS NOT CURRENTLY ACTIVELY BEING SUPPORTED**
+
 ## Node Requirements
 
 You must use a node version of at least 4.0.
