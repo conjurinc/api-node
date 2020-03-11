@@ -2,13 +2,6 @@
 
 For general contribution and community guidelines, please see the [community repo](https://github.com/cyberark/community).
 
-## Table of Contents
-
-- [Development](#development)
-- [Testing](#testing)
-- [Releases](#releases)
-- [Contributing](#contributing)
-
 ## Contributing
 
 1. [Fork the project](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)
@@ -21,4 +14,22 @@ For general contribution and community guidelines, please see the [community rep
 From here your pull request will be reviewed and once you've responded to all
 feedback it will be merged into the project. Congratulations, you're a
 contributor!
-dd
+
+# Testing
+
+* Install dependencies
+```
+    $ npm install
+```
+
+* Configure gulp reporting (optional)
+```
+    # To write reports to a file in xunit format
+    $ export TEST_REPORTER=xunit-file
+    $ export XUNIT_FILE=reports/report.xml
+```
+
+* Run jslint and tests
+```
+    $ gulp
+```
